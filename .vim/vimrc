@@ -1,0 +1,159 @@
+" ** General settings **
+set nocompatible
+filetype off
+
+" add Vundle to the runtime path
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'fholgado/minibufexpl.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+
+call vundle#end()
+filetype plugin indent on
+
+" allow vim to operate on multiple buffers (files) by allowing buffers to be 'hidden'
+set hidden
+
+" auto-save buffers when executing commands
+set autowrite
+
+" a tab should be 4 spaces and the tab character should always be expanded to spaces
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" I always use a dark background
+set bg=dark
+
+set number
+set relativenumber
+
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsSnippetsDir="~/.vim/UltiSnips"
+
+" ** Shortcuts **
+" map ctrl+h/ctrl+l to previous/next buffer respectively
+nmap <silent> <C-H> :bp<CR>
+nmap <silent> <C-L> :bn<CR>
+
+" ** Options for CtrlP **
+" Help CtrlP find the root of the project
+let g:ctrlp_root_markers=['systeminfo.txt', 'CMakeProjectSetup.txt', 'package.json']
+
+" Persist the ctrlP cache
+let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+
+" ** Options for NERD Tree plugin **
+" Close tree window after opening a file
+let NERDTreeQuitOnOpen=1
+
+" Ignore files under */vendor/*, */CMakeFiles/*, buildOutput, and .o or .d
+" files
+let g:ctrlp_custom_ignore={
+    \ 'dir': '\v[\/](vendor|CMakeFiles|build_linux|build|buildOutput|node_modules|target|.svn)[\/]',
+    \ 'file': '\v\.(o|d|pyc|so|vhd|class)$',
+    \ }
+
+" Use ctrl-y to bring up ctrlP
+let g:ctrlp_map='<c-y>'
+
+" Use regex mode
+let g:ctrlp_regexp=1
+
+" Let ctrlP search for more files
+let g:ctrlp_max_files=15000
+
+" Create a function to swap header and source using CtrlP
+"     filename: name of the file without path or extension
+"     ext: extension of the file
+function! SwapHeaderSource(filename, ext)
+    if (a:ext == "cpp")
+        :CtrlP
+        execute "normal ".a:filename.".h\<CR>"
+    elseif (a:ext == "h")
+        :CtrlP
+        execute "normal ".a:filename.".cpp\<CR>"
+    endif
+endfunction
+
+function! OpenFileCurWord(ext)
+    let b = expand("<cword>")
+    :CtrlP
+    execute "normal "b.a:ext."\<CR>"
+endfunction
+
+function! DeleteInactiveBufs()
+    "From tabpagebuflist() help, get a list of all buffers in all tabs
+    let tablist = []
+    for i in range(tabpagenr('$'))
+        call extend(tablist, tabpagebuflist(i + 1))
+    endfor
+
+    "Below originally inspired by Hara Krishna Dara and Keith Roberts
+    "http://tech.groups.yahoo.com/group/vim/message/56425
+    let nWipeouts = 0
+    for i in range(1, bufnr('$'))
+        if bufexists(i) && !getbufvar(i,"&mod") && index(tablist, i) == -1
+        "bufno exists AND isn't modified AND isn't in the list of buffers open in windows and tabs
+            silent exec 'bwipeout' i
+            let nWipeouts = nWipeouts + 1
+        endif
+    endfor
+    echomsg nWipeouts . ' buffer(s) wiped out'
+endfunction
+command! Bdi :call DeleteInactiveBufs()
+
+" map F2 to toggle NERD Tree
+nmap <silent> <F2> :NERDTreeToggle<CR>
+
+" map F3 to swap header/source for current buffer
+nmap <silent> <F3> :call SwapHeaderSource(expand("%:t:r"), expand("%:e"))<CR>
+
+" map F4 to load the header with name of current word
+nmap <silent> <F4> :call OpenFileCurWord(".h")<CR>
+
+" map F5 to load the header with name of current word
+nmap <silent> <F5> :call OpenFileCurWord(".cpp")<CR>
+
+" map F6 to toggle NERD Tree at current file
+nmap <silent> <F6> :NERDTree %:h<CR>
+
+" map F7 to jump to the next error in quickfix window
+nmap <silent> <F7> :cn<CR>
+nmap <silent> <S-F7> :cp<CR>
+
+" map F8 to turn off syntax highlighting
+map <silent> <F8> :if exists("g:syntax_on") <Bar>
+    \       syntax off <Bar>
+    \   else <Bar>
+    \       syntax enable <Bar>
+    \   endif <CR>
+
+" map F9 to toggle paste
+set pastetoggle=<F9>
+
+" map F10 to disable swap file
+nmap <silent> <F10> :set noswapfile
+
+" map F11 to re-enable swap file
+nmap <silent> <F11> :set swapfile
+
+" map F12 to deactivate/activate line numbering
+nmap <silent> <F12> :set nonumber<CR>:set norelativenumber<CR>
+nmap <silent> <S-F12> :set number<CR>:set relativenumber<CR>
+
+" Highlight extra whitespace
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+

@@ -1,0 +1,60 @@
+snippet lic "RT Logic license" b
+/*************************************************************************
+ * Real Time Logic Proprietary
+ *
+ * Copyright 2019 Real Time Logic Incorporated
+ * All Rights Reserved. No warranty, explicit or implicit, is provided.
+ *
+ * NOTICE: All information contained herein is, and remains the trade secrets
+ * and property of Real Time Logic Incorporated. Neither this information nor
+ * this material may be disseminated, reproduced, used, copied, distributed,
+ * or maintained, and derivatives may not be made, without prior written
+ * consent from Real Time Logic Incorporated.
+ *************************************************************************/
+
+
+endsnippet
+
+snippet n "Namespace" !b
+namespace ${1:`!p snip.rv = snip.basename or "name"`}
+{
+$2
+} // namespace $1
+
+endsnippet
+
+snippet guard "Header include guard" !b
+#ifndef _$1_H_
+#define _$1_H_
+
+$2
+
+#endif // _$1_H_
+
+endsnippet
+
+snippet t3guard "Header include guard" !b
+#ifndef _$1_h_
+#define _$1_h_
+
+$2
+
+#endif // _$1_h_
+
+endsnippet
+
+snippet getset "Getter and Setter" !b
+/// Set the $4
+void set$1( $2 $3 );
+
+/// Get the $4
+$2 get$1( ) const;
+endsnippet
+
+snippet getsetr "Getter and Setter" !b
+/// Set the $4
+void set$1( const $2& $3 );
+
+/// Get the $4
+$2 get$1( ) const;
+endsnippet
