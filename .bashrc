@@ -91,9 +91,9 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias cd1='../'
-alias cd2='../../'
-alias cd3='../../../'
+alias cd1='cd ../'
+alias cd2='cd ../../'
+alias cd3='cd ../../../'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
